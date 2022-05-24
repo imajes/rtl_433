@@ -11,7 +11,7 @@
 // This is pretty arbitrary
 #define RH_ASK_MAX_PAYLOAD_LEN 67
 //#define RH_ASK_MAX_PAYLOAD_LEN 80
-#define RH_ASK_HEADER_LEN 4
+#define RH_ASK_HEADER_LEN      4
 #define RH_ASK_MAX_MESSAGE_LEN (RH_ASK_MAX_PAYLOAD_LEN - RH_ASK_HEADER_LEN - 3)
 
 uint8_t switchdoclabs_weathersenseAS_payload[RH_ASK_MAX_PAYLOAD_LEN] = {0};
@@ -27,8 +27,7 @@ int switchdoclabs_weathersenseAS_data_payload[RH_ASK_MAX_MESSAGE_LEN];
 // Concatenated symbols have runs of at most 4 identical bits.
 static uint8_t symbols[] = {
         0x0d, 0x0e, 0x13, 0x15, 0x16, 0x19, 0x1a, 0x1c,
-        0x23, 0x25, 0x26, 0x29, 0x2a, 0x2c, 0x32, 0x34
-};
+        0x23, 0x25, 0x26, 0x29, 0x2a, 0x2c, 0x32, 0x34};
 
 // Convert a 6 bit encoded symbol into its 4 bit decoded equivalent
 static uint8_t symbol_6to4(uint8_t symbol)
@@ -48,7 +47,7 @@ static uint8_t symbol_6to4(uint8_t symbol)
 
 static int switchdoclabs_weathersenseAS_ask_extract(r_device *decoder, bitbuffer_t *bitbuffer, uint8_t row, /*OUT*/ uint8_t *payload)
 {
-    int len = bitbuffer->bits_per_row[row];
+    int len     = bitbuffer->bits_per_row[row];
     int msg_len = RH_ASK_MAX_MESSAGE_LEN;
     int pos, nb_bytes;
     uint8_t rxBits[2] = {0};
@@ -99,7 +98,7 @@ static int switchdoclabs_weathersenseAS_ask_extract(r_device *decoder, bitbuffer
             }
             return DECODE_FAIL_SANITY;
         }
-        uint8_t byte = hi_nibble << 4 | lo_nibble;
+        uint8_t byte      = hi_nibble << 4 | lo_nibble;
         payload[nb_bytes] = byte;
         if (nb_bytes == 0) {
             msg_len = byte;
@@ -123,7 +122,7 @@ static int switchdoclabs_weathersenseAS_ask_extract(r_device *decoder, bitbuffer
     }
 
     // Check CRC
-    crc = (payload[msg_len - 1] << 8) | payload[msg_len - 2];
+    crc           = (payload[msg_len - 1] << 8) | payload[msg_len - 2];
     crc_recompute = ~crc16lsb(payload, msg_len - 2, 0x8408, 0xFFFF);
     if (crc_recompute != crc) {
         if (decoder->verbose) {
@@ -138,103 +137,87 @@ static int switchdoclabs_weathersenseAS_ask_extract(r_device *decoder, bitbuffer
 long ASconvertByteToLong(uint8_t buffer[], int index)
 {
 
-    
     union Long {
-      struct{
-        uint8_t   byte1;
-        uint8_t   byte2;
-        uint8_t   byte3;
-        uint8_t   byte4;
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+        long word;
+    };
 
-      };
-      long  word;
-    
-      };
+    union Long myData;
 
-      union Long myData;
-
-      myData.byte1 = buffer[index];
-      myData.byte2 = buffer[index+1];
-      myData.byte3 = buffer[index+2];
-      myData.byte4 = buffer[index+3];
-      return myData.word;
-    }
+    myData.byte1 = buffer[index];
+    myData.byte2 = buffer[index + 1];
+    myData.byte3 = buffer[index + 2];
+    myData.byte4 = buffer[index + 3];
+    return myData.word;
+}
 
 unsigned long ASconvertByteToUnsignedLong(uint8_t buffer[], int index)
 {
 
-    
     union Long {
-      struct{
-        uint8_t   byte1;
-        uint8_t   byte2;
-        uint8_t   byte3;
-        uint8_t   byte4;
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+        unsigned long word;
+    };
 
-      };
-      unsigned long  word;
-    
-      };
+    union Long myData;
 
-      union Long myData;
-
-      myData.byte1 = buffer[index];
-      myData.byte2 = buffer[index+1];
-      myData.byte3 = buffer[index+2];
-      myData.byte4 = buffer[index+3];
-      return myData.word;
-    }
+    myData.byte1 = buffer[index];
+    myData.byte2 = buffer[index + 1];
+    myData.byte3 = buffer[index + 2];
+    myData.byte4 = buffer[index + 3];
+    return myData.word;
+}
 
 unsigned int ASconvertByteToUnsignedInt(uint8_t buffer[], int index)
 {
 
-    
     union myInt {
-      struct{
-        uint8_t   byte1;
-        uint8_t   byte2;
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+        };
+        unsigned int word;
+    };
 
-      };
-      unsigned int  word;
-    
-      };
+    union myInt myData;
 
-      union myInt myData;
-
-      myData.byte1 = buffer[index];
-      myData.byte2 = buffer[index+1];
-      return myData.word;
-    }
+    myData.byte1 = buffer[index];
+    myData.byte2 = buffer[index + 1];
+    return myData.word;
+}
 
 float ASconvertByteToFloat(uint8_t buffer[], int index)
 {
 
-    
     union Float {
-      struct{
-        uint8_t   byte1;
-        uint8_t   byte2;
-        uint8_t   byte3;
-        uint8_t   byte4;
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+        float word;
+    };
 
-      };
-      float  word;
-    
-      };
+    union Float myData;
 
-      union Float myData;
+    myData.byte1 = buffer[index];
+    myData.byte2 = buffer[index + 1];
+    myData.byte3 = buffer[index + 2];
+    myData.byte4 = buffer[index + 3];
 
-      myData.byte1 = buffer[index];
-      myData.byte2 = buffer[index+1];
-      myData.byte3 = buffer[index+2];
-      myData.byte4 = buffer[index+3];
-
-      return myData.word;
-    }
-
-
-
-
+    return myData.word;
+}
 
 static int switchdoclabs_weathersenseAS_ask_callback(r_device *decoder, bitbuffer_t *bitbuffer)
 {
@@ -242,31 +225,31 @@ static int switchdoclabs_weathersenseAS_ask_callback(r_device *decoder, bitbuffe
     uint8_t row = 0; // we are considering only first row
     int msg_len, data_len, header_to, header_from, header_id, header_flags;
 
-// protocol data
+    // protocol data
     long messageID;
     uint8_t WSASID;
     uint8_t ProtocolVersion;
     uint8_t SoftwareVersion;
     uint8_t WeatherSenseProtocol;
 
-    unsigned long EQCount= 0;
-    float FinalEQ_SI = 0.0;
-    float FinalEQ_PGA = 0.0;
-    float InstantEQ_SI = 0.0;
-    float InstantEQ_PGA = 0.0;
+    unsigned long EQCount = 0;
+    float FinalEQ_SI      = 0.0;
+    float FinalEQ_PGA     = 0.0;
+    float InstantEQ_SI    = 0.0;
+    float InstantEQ_PGA   = 0.0;
 
-    float BatteryVoltage = 0.0;
-    float BatteryCurrent = 0.0;
-    float LoadVoltage = 0.0;
-    float LoadCurrent = 0.0;
+    float BatteryVoltage    = 0.0;
+    float BatteryCurrent    = 0.0;
+    float LoadVoltage       = 0.0;
+    float LoadCurrent       = 0.0;
     float SolarPanelVoltage = 0.0;
     float SolarPanelCurrent = 0.0;
-    unsigned long AuxA = 0.0;
+    unsigned long AuxA      = 0.0;
 
-    int SolarPresent = 0;
-    int ASPresent = 0;
+    int SolarPresent     = 0;
+    int ASPresent        = 0;
     int KeepAliveMessage = 0;
-    int LowBattery = 0;
+    int LowBattery       = 0;
 
     msg_len = switchdoclabs_weathersenseAS_ask_extract(decoder, bitbuffer, row, switchdoclabs_weathersenseAS_payload);
 
@@ -275,23 +258,21 @@ static int switchdoclabs_weathersenseAS_ask_callback(r_device *decoder, bitbuffe
     }
     data_len = msg_len - RH_ASK_HEADER_LEN - 3;
 
-    header_to = switchdoclabs_weathersenseAS_payload[1];
-    header_from = switchdoclabs_weathersenseAS_payload[2];
-    header_id = switchdoclabs_weathersenseAS_payload[3];
+    header_to    = switchdoclabs_weathersenseAS_payload[1];
+    header_from  = switchdoclabs_weathersenseAS_payload[2];
+    header_id    = switchdoclabs_weathersenseAS_payload[3];
     header_flags = switchdoclabs_weathersenseAS_payload[4];
-
 
     // gather data
     messageID = ASconvertByteToLong(switchdoclabs_weathersenseAS_payload, 5);
 
-    WSASID = switchdoclabs_weathersenseAS_payload[9];
+    WSASID               = switchdoclabs_weathersenseAS_payload[9];
     WeatherSenseProtocol = switchdoclabs_weathersenseAS_payload[10];
     if (decoder->verbose > 1) {
         fprintf(stderr, "%d: WeatherSenseProtocol\n", WeatherSenseProtocol);
     }
 
-    if (WeatherSenseProtocol != 18) 
-    {
+    if (WeatherSenseProtocol != 18) {
         // only accept weathersenseAS protocols
         return 0;
     }
@@ -299,28 +280,27 @@ static int switchdoclabs_weathersenseAS_ask_callback(r_device *decoder, bitbuffe
     ProtocolVersion = switchdoclabs_weathersenseAS_payload[11];
 
     EQCount = ASconvertByteToLong(switchdoclabs_weathersenseAS_payload, 12);
-    
-    FinalEQ_SI = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 16);
-    FinalEQ_PGA = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 20);
-    InstantEQ_SI = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 24);
+
+    FinalEQ_SI    = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 16);
+    FinalEQ_PGA   = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 20);
+    InstantEQ_SI  = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 24);
     InstantEQ_PGA = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 28);
 
+    LoadVoltage       = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 32);
+    BatteryVoltage    = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 36);
+    BatteryCurrent    = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 40);
+    LoadCurrent       = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 44);
+    SolarPanelVoltage = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 48);
+    SolarPanelCurrent = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 52);
+    AuxA              = switchdoclabs_weathersenseAS_payload[56] & 0x0F;
+    SoftwareVersion   = switchdoclabs_weathersenseAS_payload[57];
 
-    LoadVoltage = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 32);
-    BatteryVoltage = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 36);
-    BatteryCurrent = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 40);
-    LoadCurrent  = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 44);
-    SolarPanelVoltage  = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 48);
-    SolarPanelCurrent  = ASconvertByteToFloat(switchdoclabs_weathersenseAS_payload, 52);
-    AuxA  = switchdoclabs_weathersenseAS_payload[56] & 0x0F;
-    SoftwareVersion = switchdoclabs_weathersenseAS_payload[57]; 
-   
     if (AuxA & 0x02)
         SolarPresent = 1;
     else
         SolarPresent = 0;
 
-    if (AuxA &0x01)
+    if (AuxA & 0x01)
         ASPresent = 1;
     else
         ASPresent = 0;
@@ -329,91 +309,86 @@ static int switchdoclabs_weathersenseAS_ask_callback(r_device *decoder, bitbuffe
         KeepAliveMessage = 1;
     else
         KeepAliveMessage = 0;
-    
+
     if (AuxA & 0x04)
         LowBattery = 1;
     else
         LowBattery = 0;
-    
+
     // Format data
     for (int j = 0; j < msg_len; j++) {
         switchdoclabs_weathersenseAS_data_payload[j] = (int)switchdoclabs_weathersenseAS_payload[5 + j];
     }
 
-
     // now build output
     data = data_make(
-            "model",        "",             DATA_STRING, _X("SwitchDoc Labs WeatherSense Wireless AfterShock","SwitchDoc Labs AfterShock"),
-            "len",          "Data len",     DATA_INT, data_len,
+            "model", "", DATA_STRING, _X("SwitchDoc Labs WeatherSense Wireless AfterShock", "SwitchDoc Labs AfterShock"),
+            "len", "Data len", DATA_INT, data_len,
 
-            "messageid",        "Message ID",        DATA_INT, messageID,
-            "deviceid",        "Device ID",        DATA_INT, WSASID,
-            "protocolversion",        "Protocol Version",   DATA_INT, ProtocolVersion,
-            "softwareversion",        "Software Version",        DATA_INT, SoftwareVersion,
-            "weathersenseprotocol",        "WeatherSense Type",        DATA_INT, WeatherSenseProtocol,
-            "eqcount",        "Earthquake Count",        DATA_INT, EQCount,
-            "finaleq_si",        "Final EQ SI",        DATA_DOUBLE, FinalEQ_SI,
-            "finaleq_pga",        "Final EQ PGA",        DATA_DOUBLE, FinalEQ_PGA,
-            "instanteq_si",        "Instant EQ SI",        DATA_DOUBLE, InstantEQ_SI,
-            "instanteq_pga",        "Instant EQ PGA",        DATA_DOUBLE, InstantEQ_PGA,
+            "messageid", "Message ID", DATA_INT, messageID,
+            "deviceid", "Device ID", DATA_INT, WSASID,
+            "protocolversion", "Protocol Version", DATA_INT, ProtocolVersion,
+            "softwareversion", "Software Version", DATA_INT, SoftwareVersion,
+            "weathersenseprotocol", "WeatherSense Type", DATA_INT, WeatherSenseProtocol,
+            "eqcount", "Earthquake Count", DATA_INT, EQCount,
+            "finaleq_si", "Final EQ SI", DATA_DOUBLE, FinalEQ_SI,
+            "finaleq_pga", "Final EQ PGA", DATA_DOUBLE, FinalEQ_PGA,
+            "instanteq_si", "Instant EQ SI", DATA_DOUBLE, InstantEQ_SI,
+            "instanteq_pga", "Instant EQ PGA", DATA_DOUBLE, InstantEQ_PGA,
 
-            "loadvoltage",        "Load Voltage",        DATA_DOUBLE, LoadVoltage,
-            "batteryvoltage",        "Battery Voltage",        DATA_DOUBLE, BatteryVoltage,
-            "batterycurrent",        "Battery Current",        DATA_DOUBLE, BatteryCurrent,
-            "loadcurrent",        "Load Current",        DATA_DOUBLE, LoadCurrent,
-            "solarpanelvoltage",        "Solar Panel Voltage",        DATA_DOUBLE, SolarPanelVoltage,
-            "solarpanelcurrent",        "Solar Panel Current",        DATA_DOUBLE, SolarPanelCurrent,
-            "auxa",        "Aux A",        DATA_INT, AuxA,
-            "solarpresent",        "Solar Power Present",        DATA_INT, SolarPresent,
-            "aftershockpresent",        "AS Board Present",        DATA_INT, ASPresent,
-            "keepalivemessage",        "Keep Alive Message",        DATA_INT, KeepAliveMessage,
-            "lowbattery",        "Low Battery",        DATA_INT, LowBattery,
+            "loadvoltage", "Load Voltage", DATA_DOUBLE, LoadVoltage,
+            "batteryvoltage", "Battery Voltage", DATA_DOUBLE, BatteryVoltage,
+            "batterycurrent", "Battery Current", DATA_DOUBLE, BatteryCurrent,
+            "loadcurrent", "Load Current", DATA_DOUBLE, LoadCurrent,
+            "solarpanelvoltage", "Solar Panel Voltage", DATA_DOUBLE, SolarPanelVoltage,
+            "solarpanelcurrent", "Solar Panel Current", DATA_DOUBLE, SolarPanelCurrent,
+            "auxa", "Aux A", DATA_INT, AuxA,
+            "solarpresent", "Solar Power Present", DATA_INT, SolarPresent,
+            "aftershockpresent", "AS Board Present", DATA_INT, ASPresent,
+            "keepalivemessage", "Keep Alive Message", DATA_INT, KeepAliveMessage,
+            "lowbattery", "Low Battery", DATA_INT, LowBattery,
 
-            "mic",          "Integrity",    DATA_STRING, "CRC",
+            "mic", "Integrity", DATA_STRING, "CRC",
             NULL);
-    
+
     decoder_output_data(decoder, data);
 
     return 1;
 }
 
-
 static char *switchdoclabs_weathersenseAS_ask_output_fields[] = {
-    "model",
-    "len",
-    "messageid",
-    "weathersenseASid",
-    "weathersenseASprotocol",
-    "weathersenseASsoftwareversion",
-    "weathersenseAStype",
-    
-    "eqcount",
-    "finaleq_si",
-    "finaleq_pga",
-    "instanteq_si",
-    "instanteq_pga",
+        "model",
+        "len",
+        "messageid",
+        "weathersenseASid",
+        "weathersenseASprotocol",
+        "weathersenseASsoftwareversion",
+        "weathersenseAStype",
 
-    "loadvoltage",
-    "insidetemperature",
-    "insidehumidity",
-    "batteryvoltage",
-    "batterycurrent",
-    "loadcurrent",
-    "solarpanelvoltage",
-    "solarpanelcurrent",
-    "auxa",
-    "mic",
-    NULL
-};
+        "eqcount",
+        "finaleq_si",
+        "finaleq_pga",
+        "instanteq_si",
+        "instanteq_pga",
 
+        "loadvoltage",
+        "insidetemperature",
+        "insidehumidity",
+        "batteryvoltage",
+        "batterycurrent",
+        "loadcurrent",
+        "solarpanelvoltage",
+        "solarpanelcurrent",
+        "auxa",
+        "mic",
+        NULL};
 
 r_device switchdoclabs_weathersenseAS = {
-    .name           = "SwitchDoc Labs WeatherSenseAS",
-    .modulation     = OOK_PULSE_PCM_RZ,
-    .short_width    = 500,
-    .long_width     = 500,
-    .reset_limit    = 5*500,
-    .decode_fn      = &switchdoclabs_weathersenseAS_ask_callback,
-    .fields         = switchdoclabs_weathersenseAS_ask_output_fields,
+        .name        = "SwitchDoc Labs WeatherSenseAS",
+        .modulation  = OOK_PULSE_PCM_RZ,
+        .short_width = 500,
+        .long_width  = 500,
+        .reset_limit = 5 * 500,
+        .decode_fn   = &switchdoclabs_weathersenseAS_ask_callback,
+        .fields      = switchdoclabs_weathersenseAS_ask_output_fields,
 };
-

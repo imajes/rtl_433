@@ -11,7 +11,7 @@
 // Maximum message length (including the headers, byte count and FCS) we are willing to support
 // This is pretty arbitrary
 #define RH_ASK_MAX_PAYLOAD_LEN 67
-#define RH_ASK_HEADER_LEN 4
+#define RH_ASK_HEADER_LEN      4
 #define RH_ASK_MAX_MESSAGE_LEN (RH_ASK_MAX_PAYLOAD_LEN - RH_ASK_HEADER_LEN - 3)
 
 uint8_t switchdoclabs_solarmax_payload[RH_ASK_MAX_PAYLOAD_LEN] = {0};
@@ -27,8 +27,7 @@ int switchdoclabs_solarmax_data_payload[RH_ASK_MAX_MESSAGE_LEN];
 // Concatenated symbols have runs of at most 4 identical bits.
 static uint8_t symbols[] = {
         0x0d, 0x0e, 0x13, 0x15, 0x16, 0x19, 0x1a, 0x1c,
-        0x23, 0x25, 0x26, 0x29, 0x2a, 0x2c, 0x32, 0x34
-};
+        0x23, 0x25, 0x26, 0x29, 0x2a, 0x2c, 0x32, 0x34};
 
 // Convert a 6 bit encoded symbol into its 4 bit decoded equivalent
 static uint8_t symbol_6to4(uint8_t symbol)
@@ -48,7 +47,7 @@ static uint8_t symbol_6to4(uint8_t symbol)
 
 static int switchdoclabs_solarmax_ask_extract(r_device *decoder, bitbuffer_t *bitbuffer, uint8_t row, /*OUT*/ uint8_t *payload)
 {
-    int len = bitbuffer->bits_per_row[row];
+    int len     = bitbuffer->bits_per_row[row];
     int msg_len = RH_ASK_MAX_MESSAGE_LEN;
     int pos, nb_bytes;
     uint8_t rxBits[2] = {0};
@@ -99,7 +98,7 @@ static int switchdoclabs_solarmax_ask_extract(r_device *decoder, bitbuffer_t *bi
             }
             return DECODE_FAIL_SANITY;
         }
-        uint8_t byte = hi_nibble << 4 | lo_nibble;
+        uint8_t byte      = hi_nibble << 4 | lo_nibble;
         payload[nb_bytes] = byte;
         if (nb_bytes == 0) {
             msg_len = byte;
@@ -123,7 +122,7 @@ static int switchdoclabs_solarmax_ask_extract(r_device *decoder, bitbuffer_t *bi
     }
 
     // Check CRC
-    crc = (payload[msg_len - 1] << 8) | payload[msg_len - 2];
+    crc           = (payload[msg_len - 1] << 8) | payload[msg_len - 2];
     crc_recompute = ~crc16lsb(payload, msg_len - 2, 0x8408, 0xFFFF);
     if (crc_recompute != crc) {
         if (decoder->verbose) {
@@ -138,78 +137,69 @@ static int switchdoclabs_solarmax_ask_extract(r_device *decoder, bitbuffer_t *bi
 long convertByteToLong(uint8_t buffer[], int index)
 {
 
-    
     union Long {
-      struct{
-        uint8_t   byte1;
-        uint8_t   byte2;
-        uint8_t   byte3;
-        uint8_t   byte4;
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+        long word;
+    };
 
-      };
-      long  word;
-    
-      };
+    union Long myData;
 
-      union Long myData;
-
-      myData.byte1 = buffer[index];
-      myData.byte2 = buffer[index+1];
-      myData.byte3 = buffer[index+2];
-      myData.byte4 = buffer[index+3];
-      return myData.word;
-    }
+    myData.byte1 = buffer[index];
+    myData.byte2 = buffer[index + 1];
+    myData.byte3 = buffer[index + 2];
+    myData.byte4 = buffer[index + 3];
+    return myData.word;
+}
 
 unsigned long convertByteToUnsignedLong(uint8_t buffer[], int index)
 {
 
-    
     union Long {
-      struct{
-        uint8_t   byte1;
-        uint8_t   byte2;
-        uint8_t   byte3;
-        uint8_t   byte4;
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+        unsigned long word;
+    };
 
-      };
-      unsigned long  word;
-    
-      };
+    union Long myData;
 
-      union Long myData;
-
-      myData.byte1 = buffer[index];
-      myData.byte2 = buffer[index+1];
-      myData.byte3 = buffer[index+2];
-      myData.byte4 = buffer[index+3];
-      return myData.word;
-    }
+    myData.byte1 = buffer[index];
+    myData.byte2 = buffer[index + 1];
+    myData.byte3 = buffer[index + 2];
+    myData.byte4 = buffer[index + 3];
+    return myData.word;
+}
 
 float convertByteToFloat(uint8_t buffer[], int index)
 {
 
-    
     union Float {
-      struct{
-        uint8_t   byte1;
-        uint8_t   byte2;
-        uint8_t   byte3;
-        uint8_t   byte4;
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+        float word;
+    };
 
-      };
-      float  word;
-    
-      };
+    union Float myData;
 
-      union Float myData;
+    myData.byte1 = buffer[index];
+    myData.byte2 = buffer[index + 1];
+    myData.byte3 = buffer[index + 2];
+    myData.byte4 = buffer[index + 3];
 
-      myData.byte1 = buffer[index];
-      myData.byte2 = buffer[index+1];
-      myData.byte3 = buffer[index+2];
-      myData.byte4 = buffer[index+3];
-
-      return myData.word;
-    }
+    return myData.word;
+}
 
 static int switchdoclabs_solarmax_ask_callback(r_device *decoder, bitbuffer_t *bitbuffer)
 {
@@ -217,7 +207,7 @@ static int switchdoclabs_solarmax_ask_callback(r_device *decoder, bitbuffer_t *b
     uint8_t row = 0; // we are considering only first row
     int msg_len, data_len, header_to, header_from, header_id, header_flags;
 
-// protocol data
+    // protocol data
     long messageID;
     uint8_t SolarMAXID;
     uint8_t SolarMAXProtocol;
@@ -235,110 +225,101 @@ static int switchdoclabs_solarmax_ask_callback(r_device *decoder, bitbuffer_t *b
     unsigned long AuxA;
     float AuxB;
 
-
-
     msg_len = switchdoclabs_solarmax_ask_extract(decoder, bitbuffer, row, switchdoclabs_solarmax_payload);
     if (msg_len <= 0) {
         return msg_len; // pass error code on
     }
     data_len = msg_len - RH_ASK_HEADER_LEN - 3;
 
-    header_to = switchdoclabs_solarmax_payload[1];
-    header_from = switchdoclabs_solarmax_payload[2];
-    header_id = switchdoclabs_solarmax_payload[3];
+    header_to    = switchdoclabs_solarmax_payload[1];
+    header_from  = switchdoclabs_solarmax_payload[2];
+    header_id    = switchdoclabs_solarmax_payload[3];
     header_flags = switchdoclabs_solarmax_payload[4];
-
 
     // gather data
     messageID = convertByteToLong(switchdoclabs_solarmax_payload, 5);
 
-    SolarMAXID = switchdoclabs_solarmax_payload[9];
+    SolarMAXID           = switchdoclabs_solarmax_payload[9];
     WeatherSenseProtocol = switchdoclabs_solarmax_payload[10];
 
-    if ((WeatherSenseProtocol != 8) && (WeatherSenseProtocol != 10) && (WeatherSenseProtocol != 11))
-    {
+    if ((WeatherSenseProtocol != 8) && (WeatherSenseProtocol != 10) && (WeatherSenseProtocol != 11)) {
         // only accept solarmax protocols
         return 0;
     }
 
-    SolarMAXProtocol = switchdoclabs_solarmax_payload[11];
+    SolarMAXProtocol        = switchdoclabs_solarmax_payload[11];
     SolarMAXSoftwareVersion = switchdoclabs_solarmax_payload[12];
 
-    LoadVoltage = convertByteToFloat(switchdoclabs_solarmax_payload, 13);
+    LoadVoltage       = convertByteToFloat(switchdoclabs_solarmax_payload, 13);
     InsideTemperature = convertByteToFloat(switchdoclabs_solarmax_payload, 17);
-    InsideHumidity = convertByteToFloat(switchdoclabs_solarmax_payload, 21);
-    BatteryVoltage = convertByteToFloat(switchdoclabs_solarmax_payload, 25);
-    BatteryCurrent = convertByteToFloat(switchdoclabs_solarmax_payload, 29);
-    LoadCurrent  = convertByteToFloat(switchdoclabs_solarmax_payload, 33);
-    SolarPanelVoltage  = convertByteToFloat(switchdoclabs_solarmax_payload, 37);
-    SolarPanelCurrent  = convertByteToFloat(switchdoclabs_solarmax_payload, 41);
-    AuxA  = convertByteToUnsignedLong(switchdoclabs_solarmax_payload, 45);
+    InsideHumidity    = convertByteToFloat(switchdoclabs_solarmax_payload, 21);
+    BatteryVoltage    = convertByteToFloat(switchdoclabs_solarmax_payload, 25);
+    BatteryCurrent    = convertByteToFloat(switchdoclabs_solarmax_payload, 29);
+    LoadCurrent       = convertByteToFloat(switchdoclabs_solarmax_payload, 33);
+    SolarPanelVoltage = convertByteToFloat(switchdoclabs_solarmax_payload, 37);
+    SolarPanelCurrent = convertByteToFloat(switchdoclabs_solarmax_payload, 41);
+    AuxA              = convertByteToUnsignedLong(switchdoclabs_solarmax_payload, 45);
 
     // Format data
     for (int j = 0; j < msg_len; j++) {
         switchdoclabs_solarmax_data_payload[j] = (int)switchdoclabs_solarmax_payload[5 + j];
     }
 
-
     // now build output
     data = data_make(
-            "model",        "",             DATA_STRING, _X("SwitchDoc Labs SolarMAX","SwitchDoc Labs SolarMAX"),
-            "len",          "Data len",     DATA_INT, data_len,
+            "model", "", DATA_STRING, _X("SwitchDoc Labs SolarMAX", "SwitchDoc Labs SolarMAX"),
+            "len", "Data len", DATA_INT, data_len,
 
-            "messageid",        "Messager ID",        DATA_INT, messageID,
-            "deviceid",        "SolarMAX ID",        DATA_INT, SolarMAXID,
-            "protocolversion",        "SolarMAX Protocol Version",   DATA_INT, SolarMAXProtocol,
-            "softwareversion",        "SolarMAX Software Version",        DATA_INT, SolarMAXSoftwareVersion,
-            "weathersenseprotocol",        "WeatherSense Type",        DATA_INT, WeatherSenseProtocol,
-            "loadvoltage",        "Load Voltage",        DATA_DOUBLE, LoadVoltage,
-            "internaltemperature",        "Internal Temperature",        DATA_DOUBLE, InsideTemperature,
-            "internalhumidity",        "Internal Humidity",        DATA_DOUBLE, InsideHumidity,
-            "batteryvoltage",        "Battery Voltage",        DATA_DOUBLE, BatteryVoltage,
-            "batterycurrent",        "Battery Current",        DATA_DOUBLE, BatteryCurrent,
-            "loadcurrent",        "Load Current",        DATA_DOUBLE, LoadCurrent,
-            "solarpanelvoltage",        "Solar Panel Voltage",        DATA_DOUBLE, SolarPanelVoltage,
-            "solarpanelcurrent",        "Solar Panel Current",        DATA_DOUBLE, SolarPanelCurrent,
-            "auxa",        "Aux A",        DATA_INT, AuxA,
+            "messageid", "Messager ID", DATA_INT, messageID,
+            "deviceid", "SolarMAX ID", DATA_INT, SolarMAXID,
+            "protocolversion", "SolarMAX Protocol Version", DATA_INT, SolarMAXProtocol,
+            "softwareversion", "SolarMAX Software Version", DATA_INT, SolarMAXSoftwareVersion,
+            "weathersenseprotocol", "WeatherSense Type", DATA_INT, WeatherSenseProtocol,
+            "loadvoltage", "Load Voltage", DATA_DOUBLE, LoadVoltage,
+            "internaltemperature", "Internal Temperature", DATA_DOUBLE, InsideTemperature,
+            "internalhumidity", "Internal Humidity", DATA_DOUBLE, InsideHumidity,
+            "batteryvoltage", "Battery Voltage", DATA_DOUBLE, BatteryVoltage,
+            "batterycurrent", "Battery Current", DATA_DOUBLE, BatteryCurrent,
+            "loadcurrent", "Load Current", DATA_DOUBLE, LoadCurrent,
+            "solarpanelvoltage", "Solar Panel Voltage", DATA_DOUBLE, SolarPanelVoltage,
+            "solarpanelcurrent", "Solar Panel Current", DATA_DOUBLE, SolarPanelCurrent,
+            "auxa", "Aux A", DATA_INT, AuxA,
 
-            "mic",          "Integrity",    DATA_STRING, "CRC",
+            "mic", "Integrity", DATA_STRING, "CRC",
             NULL);
-    
+
     decoder_output_data(decoder, data);
 
     return 1;
 }
 
-
 static char *switchdoclabs_solarmax_ask_output_fields[] = {
-    "model",
-    "len",
-    "sparebyte",
-    "messageid",
-    "solarmaxid",
-    "solarmaxprotocol",
-    "solarmaxsoftwareversion",
-    "solarmaxtype",
-    "loadvoltage",
-    "insidetemperature",
-    "insidehumidity",
-    "batteryvoltage",
-    "batterycurrent",
-    "loadcurrent",
-    "solarpanelvoltage",
-    "solarpanelcurrent",
-    "auxa",
-    "mic",
-    NULL
-};
-
+        "model",
+        "len",
+        "sparebyte",
+        "messageid",
+        "solarmaxid",
+        "solarmaxprotocol",
+        "solarmaxsoftwareversion",
+        "solarmaxtype",
+        "loadvoltage",
+        "insidetemperature",
+        "insidehumidity",
+        "batteryvoltage",
+        "batterycurrent",
+        "loadcurrent",
+        "solarpanelvoltage",
+        "solarpanelcurrent",
+        "auxa",
+        "mic",
+        NULL};
 
 r_device switchdoclabs_solarmax = {
-    .name           = "SwitchDoc Labs SolarMAX",
-    .modulation     = OOK_PULSE_PCM_RZ,
-    .short_width    = 500,
-    .long_width     = 500,
-    .reset_limit    = 5*500,
-    .decode_fn      = &switchdoclabs_solarmax_ask_callback,
-    .fields         = switchdoclabs_solarmax_ask_output_fields,
+        .name        = "SwitchDoc Labs SolarMAX",
+        .modulation  = OOK_PULSE_PCM_RZ,
+        .short_width = 500,
+        .long_width  = 500,
+        .reset_limit = 5 * 500,
+        .decode_fn   = &switchdoclabs_solarmax_ask_callback,
+        .fields      = switchdoclabs_solarmax_ask_output_fields,
 };
-

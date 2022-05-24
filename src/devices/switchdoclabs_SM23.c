@@ -18,7 +18,6 @@
 #include "fatal.h"
 #include <stdlib.h>
 
-
 /*
 SwitchDoc Labs SM23  Soil Moisture Sensor
 Test decoding with: rtl_433 -f 433920000  -X "n=soil_sensor,m=FSK_PCM,s=58,l=58,t=5,r=5000,g=4000,preamble=aa2dd4"
@@ -54,30 +53,29 @@ static int switchdoclabs_SM23_callback(r_device *decoder, bitbuffer_t *bitbuffer
     data_t *data;
     uint8_t const preamble[] = {0xAA, 0x2D, 0xD4};
     uint8_t b[14];
-    
+
     unsigned bit_offset;
 
     // Validate package
-    if (bitbuffer->bits_per_row[0] < 120) {  
+    if (bitbuffer->bits_per_row[0] < 120) {
         return DECODE_ABORT_LENGTH;
     }
 
-        // Find a data package and extract data payload
-        bit_offset = bitbuffer_search(bitbuffer, 0, 0, preamble, sizeof(preamble) * 8) + sizeof(preamble) * 8;
-        printf("bit_offset=%d\n", bit_offset);
-        printf("bit_buffer->bits_per_row[0]=%d\n", bitbuffer->bits_per_row[0]);
-   if (bit_offset + sizeof(b) * 8 > bitbuffer->bits_per_row[0]) {  // Did not find a big enough package
+    // Find a data package and extract data payload
+    bit_offset = bitbuffer_search(bitbuffer, 0, 0, preamble, sizeof(preamble) * 8) + sizeof(preamble) * 8;
+    printf("bit_offset=%d\n", bit_offset);
+    printf("bit_buffer->bits_per_row[0]=%d\n", bitbuffer->bits_per_row[0]);
+    if (bit_offset + sizeof(b) * 8 > bitbuffer->bits_per_row[0]) { // Did not find a big enough package
         if (decoder->verbose)
             bitbuffer_printf(bitbuffer, "SDL_SM23: short package. Header index: %u\n", bit_offset);
         return DECODE_ABORT_LENGTH;
     }
-    
+
     bitbuffer_extract_bytes(bitbuffer, 0, bit_offset, b, sizeof(b) * 8);
 
     int i;
-    for (i=0; i < 14; i++)
-    {
-    printf("b[%i]=0x%2x\n", i, b[i]);
+    for (i = 0; i < 14; i++) {
+        printf("b[%i]=0x%2x\n", i, b[i]);
     }
     // Verify family code
     if (b[0] != 0x51) {
@@ -89,18 +87,16 @@ static int switchdoclabs_SM23_callback(r_device *decoder, bitbuffer_t *bitbuffer
     // Verify checksum
     if ((add_bytes(b, 13) & 0xff) != b[13]) {
         if (decoder->verbose)
-            bitrow_printf(b, sizeof (b) * 8, "SDL_SM23: Checksum error: ");
+            bitrow_printf(b, sizeof(b) * 8, "SDL_SM23: Checksum error: ");
         return DECODE_FAIL_MIC;
     }
 
     // Verify crc
     if (crc8(b, 12, 0x31, 0) != b[12]) {
         if (decoder->verbose)
-            bitrow_printf(b, sizeof (b) * 8, "SDL_SM23: Bitsum error: ");
+            bitrow_printf(b, sizeof(b) * 8, "SDL_SM23: Bitsum error: ");
         return DECODE_FAIL_MIC;
     }
-
-
 
     // Decode data
     char id[7];
@@ -128,28 +124,26 @@ static int switchdoclabs_SM23_callback(r_device *decoder, bitbuffer_t *bitbuffer
     return 1;
 }
 
-
 static char *output_fields_SM23[] = {
-    "model",
-    "id",
-    "battery",
-    "moisture",
-    "boost",
-    "ad_raw",
-    "mic",
-    NULL,
+        "model",
+        "id",
+        "battery",
+        "moisture",
+        "boost",
+        "ad_raw",
+        "mic",
+        NULL,
 };
 
-
 r_device switchdoclabs_SM23 = {
-    .name           = "SwitchDoc Labs SM23 Soil Moisture Sensor",
-    .modulation     = FSK_PULSE_PCM,
-    .short_width    = 58, // Bit width = 58µs (measured across 580 samples / 40 bits / 250 kHz )
-    .long_width     = 58, // NRZ encoding (bit width = pulse width)
-    //.short_width    = 58, // Bit width = 58µs (measured across 580 samples / 40 bits / 250 kHz )
-    //.long_width     = 58, // NRZ encoding (bit width = pulse width)
-    .reset_limit    = 5000,
-    .decode_fn      = &switchdoclabs_SM23_callback,
-    .disabled       = 0,
-    .fields         = output_fields_SM23,
+        .name        = "SwitchDoc Labs SM23 Soil Moisture Sensor",
+        .modulation  = FSK_PULSE_PCM,
+        .short_width = 58, // Bit width = 58µs (measured across 580 samples / 40 bits / 250 kHz )
+        .long_width  = 58, // NRZ encoding (bit width = pulse width)
+        //.short_width    = 58, // Bit width = 58µs (measured across 580 samples / 40 bits / 250 kHz )
+        //.long_width     = 58, // NRZ encoding (bit width = pulse width)
+        .reset_limit = 5000,
+        .decode_fn   = &switchdoclabs_SM23_callback,
+        .disabled    = 0,
+        .fields      = output_fields_SM23,
 };

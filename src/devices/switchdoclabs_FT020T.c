@@ -1,4 +1,4 @@
-/* 
+/*
  * SwitchDoc Labs WeatherSense FT020T All In One Weather Sensor Pack
  *
  */
@@ -31,25 +31,22 @@ const unsigned char crc_table[256] = {
         0x47, 0x76, 0x25, 0x14, 0x83, 0xb2, 0xe1, 0xd0, 0xfe, 0xcf, 0x9c, 0xad, 0x3a, 0x0b, 0x58, 0x69,
         0x04, 0x35, 0x66, 0x57, 0xc0, 0xf1, 0xa2, 0x93, 0xbd, 0x8c, 0xdf, 0xee, 0x79, 0x48, 0x1b, 0x2a,
         0xc1, 0xf0, 0xa3, 0x92, 0x05, 0x34, 0x67, 0x56, 0x78, 0x49, 0x1a, 0x2b, 0xbc, 0x8d, 0xde, 0xef,
-        0x82, 0xb3, 0xe0, 0xd1, 0x46, 0x77, 0x24, 0x15, 0x3b, 0x0a, 0x59, 0x68, 0xff, 0xce, 0x9d, 0xac
-};
+        0x82, 0xb3, 0xe0, 0xd1, 0x46, 0x77, 0x24, 0x15, 0x3b, 0x0a, 0x59, 0x68, 0xff, 0xce, 0x9d, 0xac};
 
 //============================================================================================
 // Function: Calculate the CRC value
 // Input:    crc: CRC initial value. lpBuff: string. ucLen: string length
 // Return:   CRC value
 //============================================================================================
-uint8_t GetCRC(uint8_t crc, uint8_t * lpBuff,uint8_t ucLen)
+uint8_t GetCRC(uint8_t crc, uint8_t *lpBuff, uint8_t ucLen)
 {
-        while (ucLen)
-        {
-                ucLen--;
-                crc = crc_table[*lpBuff ^ crc];
-                lpBuff++;
-        }
-        return crc;
+    while (ucLen) {
+        ucLen--;
+        crc = crc_table[*lpBuff ^ crc];
+        lpBuff++;
+    }
+    return crc;
 }
-
 
 static int
 switchdoclabs_weather_decode(r_device *decoder, bitbuffer_t *bitbuffer, unsigned row, unsigned bitpos)
@@ -57,55 +54,49 @@ switchdoclabs_weather_decode(r_device *decoder, bitbuffer_t *bitbuffer, unsigned
     uint8_t b[16];
     data_t *data;
     int i;
-    for (i=0; i< 16; i++)
-   	b[i] = 0; 
+    for (i = 0; i < 16; i++)
+        b[i] = 0;
 
-    bitbuffer_extract_bytes(bitbuffer, row, bitpos, b, 16*8);
-   /* 
-    for (i=0; i< 16; i++)
-    {
-	    fprintf(stderr,"%02x ", b[i]);
-    }
-    fprintf(stderr,"\n");
-   */ 
-    uint8_t  myDevice;
-    uint8_t  mySerial;
-    uint8_t  myFlags;
+    bitbuffer_extract_bytes(bitbuffer, row, bitpos, b, 16 * 8);
+    /*
+     for (i=0; i< 16; i++)
+     {
+             fprintf(stderr,"%02x ", b[i]);
+     }
+     fprintf(stderr,"\n");
+    */
+    uint8_t myDevice;
+    uint8_t mySerial;
+    uint8_t myFlags;
     uint8_t myBatteryLow;
-    uint16_t  myAveWindSpeed;
-    uint16_t  myGust;
-    uint16_t  myWindDirection;
+    uint16_t myAveWindSpeed;
+    uint16_t myGust;
+    uint16_t myWindDirection;
     uint32_t myCumulativeRain;
     uint8_t mySecondFlags;
     uint16_t myTemperature;
-    uint8_t  myHumidity;
+    uint8_t myHumidity;
     uint32_t myLight;
     uint16_t myUV;
     uint8_t myCRC;
-    uint8_t b2[16];	
-    uint8_t myCalculated; 
-      
+    uint8_t b2[16];
+    uint8_t myCalculated;
 
-
-
-	b2[0] = 0xd4; // Shift all 4 bits fix b2[0];
-	for (i = 0; i < 15; i++)
-	{
-		b2[i+1] = ((b[i] &0x0f)<<4) + ((b[i+1] & 0xf0)>>4);
-		b2[i] = b2[i+1]; // shift 8
-
-	}
-/*
-    	for (i=0; i< 16; i++)
-    	{
-	    	fprintf(stderr,"%02x ", b2[i]);
-    	}
-    	fprintf(stderr,"\n");
-*/
+    b2[0] = 0xd4; // Shift all 4 bits fix b2[0];
+    for (i = 0; i < 15; i++) {
+        b2[i + 1] = ((b[i] & 0x0f) << 4) + ((b[i + 1] & 0xf0) >> 4);
+        b2[i]     = b2[i + 1]; // shift 8
+    }
+    /*
+            for (i=0; i< 16; i++)
+            {
+                    fprintf(stderr,"%02x ", b2[i]);
+            }
+            fprintf(stderr,"\n");
+    */
     uint8_t expected = b2[13];
-		
+
     myCalculated = GetCRC(0xc0, b2, 13);
-	
 
     uint8_t calculated = myCalculated;
 
@@ -117,93 +108,87 @@ switchdoclabs_weather_decode(r_device *decoder, bitbuffer_t *bitbuffer, unsigned
         }
         return 0;
     }
-	
-   	myDevice = (b2[0] & 0xf0)>>4;
-	if (myDevice !=  0x0c)
-	{
-		return 0; // not my device
-	}
-   	mySerial = (b2[0]&0x0f)<<4 | (b2[1])>>4;
-   	myFlags  = b2[1] & 0x0f;
-	myBatteryLow = (myFlags & 0x08) >> 3;
-   	myAveWindSpeed = b2[2] | ((myFlags & 0x01)<<8);
-   	myGust         = b2[3] | ((myFlags & 0x02)<<7);
-   	myWindDirection= b2[4] | ((myFlags & 0x04)<<6);
-   	myCumulativeRain=(b2[5]<<8) + b2[6]; 
-   	mySecondFlags  = (b2[7] & 0xf0)>>4;
-  	//fprintf(stderr,"mySecondFlags = %01x %d\n", mySecondFlags, mySecondFlags );
-  	//fprintf(stderr,"mySecondFlags LB = %x %d\n", ((mySecondFlags & 0x08) <<13), ((mySecondFlags & 0x08) << 13) );
-	myTemperature = ((b2[7] & 0x0f)<<8) + b2[8];  
-	myHumidity = b2[9];
-	myLight = (b2[10]<<8) + b2[11] + ((mySecondFlags & 0x08)<<13);
-    myLight = 0x1FFFF & myLight;
-  	//fprintf(stderr,"myLight = %04x %d\n", myLight, myLight );
-	myUV = b2[12]; 
-	//myUV = myUV + 10;
-	myCRC = b2[13];
 
-	
-	if (myTemperature == 0xFF)
-	{
-		return 0; //  Bad Data
-	}
-	
-	if (myAveWindSpeed ==  0xFF)
-	{
-		return 0; //  Bad Data
-	}
+    myDevice = (b2[0] & 0xf0) >> 4;
+    if (myDevice != 0x0c) {
+        return 0; // not my device
+    }
+    mySerial         = (b2[0] & 0x0f) << 4 | (b2[1]) >> 4;
+    myFlags          = b2[1] & 0x0f;
+    myBatteryLow     = (myFlags & 0x08) >> 3;
+    myAveWindSpeed   = b2[2] | ((myFlags & 0x01) << 8);
+    myGust           = b2[3] | ((myFlags & 0x02) << 7);
+    myWindDirection  = b2[4] | ((myFlags & 0x04) << 6);
+    myCumulativeRain = (b2[5] << 8) + b2[6];
+    mySecondFlags    = (b2[7] & 0xf0) >> 4;
+    // fprintf(stderr,"mySecondFlags = %01x %d\n", mySecondFlags, mySecondFlags );
+    // fprintf(stderr,"mySecondFlags LB = %x %d\n", ((mySecondFlags & 0x08) <<13), ((mySecondFlags & 0x08) << 13) );
+    myTemperature = ((b2[7] & 0x0f) << 8) + b2[8];
+    myHumidity    = b2[9];
+    myLight       = (b2[10] << 8) + b2[11] + ((mySecondFlags & 0x08) << 13);
+    myLight       = 0x1FFFF & myLight;
+    // fprintf(stderr,"myLight = %04x %d\n", myLight, myLight );
+    myUV = b2[12];
+    // myUV = myUV + 10;
+    myCRC = b2[13];
 
-	/*	
-   	myDevice = (b[0]) & 0x0f;
-   	mySerial = b[1];
-   	myFlags  = (b[2]>>4) & 0x0f;
-	myBatteryLow = (myFlags & 0x08) >> 3;
-   	myAveWindSpeed = ((b[2] & 0x0f)<<4 ) + (b[3]>>4)+ ((myFlags & 0x01)<<8);
-   	myGust         = ((b[3] & 0x0f)<<4 ) + (b[4]>>4)+ ((myFlags & 0x02)<<7);
-   	myWindDirection= ((b[4] & 0x0f)<<4 ) + (b[5]>>4) + ((myFlags & 0x04)<<6);
-   	myCumulativeRain=((((b[5] & 0x0f)<<4 ) + (b[6]>>4))<<8) + (((b[6] & 0x0f)<<4 ) + (b[7]>>4)) ;
-   	mySecondFlags  = (b[7]) & 0x0f;
-	myTemperature = ((b[8]& 0xf0)<<4) + ((b[8] &0x0f)<<4) + ((b[9] &0xf0) >>4);
-	myHumidity = ((b[9] &0x0f)<<4) + (b[10]>>4);
-	myLight = ((b[10] & 0x0f)<<12) + ((b[11] & 0xf0)<< 4) + ((b[11] &0x0f)<< 4) + (b[12]>>4)+ ((mySecondFlags & 0x08)<<9);
-	myUV = ((b[12] & 0x0f) << 4) + ((b[13] & 0xf0)>>4);
-	//myUV = myUV + 10;
-	myCRC = ((b[13] & 0x0f) << 4) + ((b[14] & 0xf0)>>4);
+    if (myTemperature == 0xFF) {
+        return 0; //  Bad Data
+    }
+
+    if (myAveWindSpeed == 0xFF) {
+        return 0; //  Bad Data
+    }
+
+    /*
+    myDevice = (b[0]) & 0x0f;
+    mySerial = b[1];
+    myFlags  = (b[2]>>4) & 0x0f;
+    myBatteryLow = (myFlags & 0x08) >> 3;
+    myAveWindSpeed = ((b[2] & 0x0f)<<4 ) + (b[3]>>4)+ ((myFlags & 0x01)<<8);
+    myGust         = ((b[3] & 0x0f)<<4 ) + (b[4]>>4)+ ((myFlags & 0x02)<<7);
+    myWindDirection= ((b[4] & 0x0f)<<4 ) + (b[5]>>4) + ((myFlags & 0x04)<<6);
+    myCumulativeRain=((((b[5] & 0x0f)<<4 ) + (b[6]>>4))<<8) + (((b[6] & 0x0f)<<4 ) + (b[7]>>4)) ;
+    mySecondFlags  = (b[7]) & 0x0f;
+    myTemperature = ((b[8]& 0xf0)<<4) + ((b[8] &0x0f)<<4) + ((b[9] &0xf0) >>4);
+    myHumidity = ((b[9] &0x0f)<<4) + (b[10]>>4);
+    myLight = ((b[10] & 0x0f)<<12) + ((b[11] & 0xf0)<< 4) + ((b[11] &0x0f)<< 4) + (b[12]>>4)+ ((mySecondFlags & 0x08)<<9);
+    myUV = ((b[12] & 0x0f) << 4) + ((b[13] & 0xf0)>>4);
+    //myUV = myUV + 10;
+    myCRC = ((b[13] & 0x0f) << 4) + ((b[14] & 0xf0)>>4);
 */
     /*
-  	fprintf(stderr,"myDevice = %02x %d\n", myDevice, myDevice );
-  	fprintf(stderr,"mySerial = %02x %d\n", mySerial, mySerial );
-  	fprintf(stderr,"myFlags = %01x %d\n", myFlags, myFlags );
-  	fprintf(stderr,"myBatteryLow  = %01x %d\n", myBatteryLow , myBatteryLow  );
-  	fprintf(stderr,"myAveWindSpeed = %02x %d\n", myAveWindSpeed, myAveWindSpeed );
-  	fprintf(stderr,"myGust = %02x %d\n", myGust, myGust );
-  	fprintf(stderr,"myWindDirection = %02x %d\n", myWindDirection, myWindDirection );
-  	fprintf(stderr,"myCumulativeRain = %04x %d\n", myCumulativeRain, myCumulativeRain );
-  	fprintf(stderr,"mySecondFlags = %01x %d\n", mySecondFlags, mySecondFlags );
-  	fprintf(stderr,"myTemperature = %04x %d\n", myTemperature, myTemperature );
-  	fprintf(stderr,"myLight = %04x %d\n", myLight, myLight );
-  	fprintf(stderr,"myUV = %02x %d\n", myUV, myUV );
-  	fprintf(stderr,"myCRC = %02x %d\n", myCRC, myCRC );
-  	fprintf(stderr,"myCalculated = %02x %d\n", myCalculated, myCalculated );
+        fprintf(stderr,"myDevice = %02x %d\n", myDevice, myDevice );
+        fprintf(stderr,"mySerial = %02x %d\n", mySerial, mySerial );
+        fprintf(stderr,"myFlags = %01x %d\n", myFlags, myFlags );
+        fprintf(stderr,"myBatteryLow  = %01x %d\n", myBatteryLow , myBatteryLow  );
+        fprintf(stderr,"myAveWindSpeed = %02x %d\n", myAveWindSpeed, myAveWindSpeed );
+        fprintf(stderr,"myGust = %02x %d\n", myGust, myGust );
+        fprintf(stderr,"myWindDirection = %02x %d\n", myWindDirection, myWindDirection );
+        fprintf(stderr,"myCumulativeRain = %04x %d\n", myCumulativeRain, myCumulativeRain );
+        fprintf(stderr,"mySecondFlags = %01x %d\n", mySecondFlags, mySecondFlags );
+        fprintf(stderr,"myTemperature = %04x %d\n", myTemperature, myTemperature );
+        fprintf(stderr,"myLight = %04x %d\n", myLight, myLight );
+        fprintf(stderr,"myUV = %02x %d\n", myUV, myUV );
+        fprintf(stderr,"myCRC = %02x %d\n", myCRC, myCRC );
+        fprintf(stderr,"myCalculated = %02x %d\n", myCalculated, myCalculated );
 
     */
 
-
-
     data = data_make(
-            "model",          "",             DATA_STRING, _X("SwitchDoc Labs-FT020T","SwitchDoc Labs FT020T AIO"),
-            _X("id","device"),         "Device",   DATA_INT,    myDevice,
-            "id",        "Serial Number",      DATA_INT,    mySerial,
-            "batterylow",        "Battery Low",      DATA_INT, myBatteryLow,
-            "avewindspeed",        "Ave Wind Speed",      DATA_INT, myAveWindSpeed,
-            "gustwindspeed",        "Gust",      DATA_INT, myGust,
-            "winddirection",        "Wind Direction",      DATA_INT, myWindDirection,
-            "cumulativerain",        "Cum Rain",      DATA_INT, myCumulativeRain,
-            "temperature",        "Temperature",      DATA_INT, myTemperature,
-            "humidity",        "Humidity",      DATA_INT, myHumidity,
-            "light",        "Light",      DATA_INT, myLight,
-            "uv",        "UV Index",      DATA_INT, myUV,
-            "mic",            "Integrity",    DATA_STRING, "CRC",
+            "model", "", DATA_STRING, _X("SwitchDoc Labs-FT020T", "SwitchDoc Labs FT020T AIO"),
+            _X("id", "device"), "Device", DATA_INT, myDevice,
+            "id", "Serial Number", DATA_INT, mySerial,
+            "batterylow", "Battery Low", DATA_INT, myBatteryLow,
+            "avewindspeed", "Ave Wind Speed", DATA_INT, myAveWindSpeed,
+            "gustwindspeed", "Gust", DATA_INT, myGust,
+            "winddirection", "Wind Direction", DATA_INT, myWindDirection,
+            "cumulativerain", "Cum Rain", DATA_INT, myCumulativeRain,
+            "temperature", "Temperature", DATA_INT, myTemperature,
+            "humidity", "Humidity", DATA_INT, myHumidity,
+            "light", "Light", DATA_INT, myLight,
+            "uv", "UV Index", DATA_INT, myUV,
+            "mic", "Integrity", DATA_STRING, "CRC",
             NULL);
     decoder_output_data(decoder, data);
 
@@ -221,20 +206,24 @@ switchdoclabs_weather_callback(r_device *decoder, bitbuffer_t *bitbuffer)
         bitpos = 0;
         // Find a preamble with enough bits after it that it could be a complete packet
         while ((bitpos = bitbuffer_search(bitbuffer, row, bitpos,
-                (const uint8_t *)&preamble_pattern, 12)) + 8+6*8 <=
+                        (const uint8_t *)&preamble_pattern, 12)) +
+                        8 + 6 * 8 <=
                 bitbuffer->bits_per_row[row]) {
-		//fprintf(stderr,"before decode1\n");
+            // fprintf(stderr,"before decode1\n");
             events += switchdoclabs_weather_decode(decoder, bitbuffer, row, bitpos + 8);
-            if (events) return events; // for now, break after first successful message
+            if (events)
+                return events; // for now, break after first successful message
             bitpos += 16;
         }
         bitpos = 0;
         while ((bitpos = bitbuffer_search(bitbuffer, row, bitpos,
-                (const uint8_t *)&preamble_inverted, 12)) + 8+6*8 <=
+                        (const uint8_t *)&preamble_inverted, 12)) +
+                        8 + 6 * 8 <=
                 bitbuffer->bits_per_row[row]) {
-	    //fprintf(stderr,"before decode2\n");
+            // fprintf(stderr,"before decode2\n");
             events += switchdoclabs_weather_decode(decoder, bitbuffer, row, bitpos + 8);
-            if (events) return events; // for now, break after first successful message
+            if (events)
+                return events; // for now, break after first successful message
             bitpos += 15;
         }
     }
@@ -243,29 +232,27 @@ switchdoclabs_weather_callback(r_device *decoder, bitbuffer_t *bitbuffer)
 }
 
 static char *output_fields[] = {
-    "model",
-    "device", 
-    "id",
-    "batterylow",
-    "avewindspeed",
-    "gustwindspeed",
-    "winddirection",
-    "cumulativerain",
-    "temperature",
-    "humidity",
-    "light",
-    "uv",
-    "mic",
-    NULL
-};
+        "model",
+        "device",
+        "id",
+        "batterylow",
+        "avewindspeed",
+        "gustwindspeed",
+        "winddirection",
+        "cumulativerain",
+        "temperature",
+        "humidity",
+        "light",
+        "uv",
+        "mic",
+        NULL};
 
 r_device switchdoclabs_FT020T = {
-    .name          = "SwitchDoc Labs Weather FT020T Sensors",
-    .modulation    = OOK_PULSE_MANCHESTER_ZEROBIT,
-    .short_width   = 488,
-    .long_width    = 0, // not used
-    .reset_limit   = 2400,
-    .decode_fn     = &switchdoclabs_weather_callback,
-    .disabled      = 0,
-    .fields        = output_fields
-};
+        .name        = "SwitchDoc Labs Weather FT020T Sensors",
+        .modulation  = OOK_PULSE_MANCHESTER_ZEROBIT,
+        .short_width = 488,
+        .long_width  = 0, // not used
+        .reset_limit = 2400,
+        .decode_fn   = &switchdoclabs_weather_callback,
+        .disabled    = 0,
+        .fields      = output_fields};
