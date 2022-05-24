@@ -133,7 +133,7 @@ static int switchdoclabs_weathersenseTB_ask_extract(r_device *decoder, bitbuffer
     return msg_len;
 }
 
-long TBconvertByteToLong(uint8_t buffer[], int index)
+static long TBconvertByteToLong(uint8_t buffer[], int index)
 {
 
     union Long {
@@ -155,7 +155,7 @@ long TBconvertByteToLong(uint8_t buffer[], int index)
     return myData.word;
 }
 
-unsigned long TBconvertByteToUnsignedLong(uint8_t buffer[], int index)
+static unsigned long TBconvertByteToUnsignedLong(uint8_t buffer[], int index)
 {
 
     union Long {
@@ -177,7 +177,7 @@ unsigned long TBconvertByteToUnsignedLong(uint8_t buffer[], int index)
     return myData.word;
 }
 
-unsigned int TBconvertByteToUnsignedInt(uint8_t buffer[], int index)
+static unsigned int TBconvertByteToUnsignedInt(uint8_t buffer[], int index)
 {
 
     union myInt {
@@ -195,7 +195,7 @@ unsigned int TBconvertByteToUnsignedInt(uint8_t buffer[], int index)
     return myData.word;
 }
 
-float TBconvertByteToFloat(uint8_t buffer[], int index)
+static float TBconvertByteToFloat(uint8_t buffer[], int index)
 {
 
     union Float {
@@ -299,7 +299,7 @@ static int switchdoclabs_weathersenseTB_ask_callback(r_device *decoder, bitbuffe
 
     // now build output
     data = data_make(
-            "model", "", DATA_STRING, _X("SwitchDoc Labs WeatherSense Wireless ThunderBoard", "SwitchDoc Labs TB"),
+            "model", "", DATA_STRING, "SwitchDoc Labs WeatherSense Wireless ThunderBoard", "SwitchDoc Labs TB",
             "len", "Data len", DATA_INT, data_len,
 
             "messageid", "Message ID", DATA_INT, messageID,
@@ -360,7 +360,7 @@ static char *switchdoclabs_weathersenseTB_ask_output_fields[] = {
 
 r_device switchdoclabs_weathersenseTB = {
         .name        = "SwitchDoc Labs WeatherSenseTB",
-        .modulation  = OOK_PULSE_PCM_RZ,
+        .modulation  = OOK_PULSE_RZ,
         .short_width = 500,
         .long_width  = 500,
         .reset_limit = 5 * 500,

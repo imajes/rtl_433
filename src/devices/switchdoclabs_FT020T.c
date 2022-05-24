@@ -176,8 +176,8 @@ switchdoclabs_weather_decode(r_device *decoder, bitbuffer_t *bitbuffer, unsigned
     */
 
     data = data_make(
-            "model", "", DATA_STRING, _X("SwitchDoc Labs-FT020T", "SwitchDoc Labs FT020T AIO"),
-            _X("id", "device"), "Device", DATA_INT, myDevice,
+            "model", "", DATA_STRING, "SwitchDoc Labs-FT020T", "SwitchDoc Labs FT020T AIO",
+            "id", "Device", DATA_INT, myDevice,
             "id", "Serial Number", DATA_INT, mySerial,
             "batterylow", "Battery Low", DATA_INT, myBatteryLow,
             "avewindspeed", "Ave Wind Speed", DATA_INT, myAveWindSpeed,

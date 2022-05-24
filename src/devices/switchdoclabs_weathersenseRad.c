@@ -135,7 +135,7 @@ static int switchdoclabs_weathersenseRad_ask_extract(r_device *decoder, bitbuffe
     return msg_len;
 }
 
-long RadconvertByteToLong(uint8_t buffer[], int index)
+static long RadconvertByteToLong(uint8_t buffer[], int index)
 {
 
     union Long {
@@ -157,7 +157,7 @@ long RadconvertByteToLong(uint8_t buffer[], int index)
     return myData.word;
 }
 
-unsigned long RadconvertByteToUnsignedLong(uint8_t buffer[], int index)
+static unsigned long RadconvertByteToUnsignedLong(uint8_t buffer[], int index)
 {
 
     union Long {
@@ -179,7 +179,7 @@ unsigned long RadconvertByteToUnsignedLong(uint8_t buffer[], int index)
     return myData.word;
 }
 
-unsigned int RadconvertByteToUnsignedInt(uint8_t buffer[], int index)
+static unsigned int RadconvertByteToUnsignedInt(uint8_t buffer[], int index)
 {
 
     union myInt {
@@ -197,7 +197,7 @@ unsigned int RadconvertByteToUnsignedInt(uint8_t buffer[], int index)
     return myData.word;
 }
 
-float RadconvertByteToFloat(uint8_t buffer[], int index)
+static float RadconvertByteToFloat(uint8_t buffer[], int index)
 {
 
     union Float {
@@ -317,7 +317,7 @@ static int switchdoclabs_weathersenseRad_ask_callback(r_device *decoder, bitbuff
 
     // now build output
     data = data_make(
-            "model", "", DATA_STRING, _X("SwitchDoc Labs WeatherSense Wireless Radiation", "SwitchDoc Labs Radiation"),
+            "model", "", DATA_STRING, "SwitchDoc Labs WeatherSense Wireless Radiation", "SwitchDoc Labs Radiation",
             "len", "Data len", DATA_INT, data_len,
 
             "messageid", "Message ID", DATA_INT, messageID,
@@ -376,7 +376,7 @@ static char *switchdoclabs_weathersenseRad_ask_output_fields[] = {
 
 r_device switchdoclabs_weathersenseRad = {
         .name        = "SwitchDoc Labs WeatherSenseRad",
-        .modulation  = OOK_PULSE_PCM_RZ,
+        .modulation  = OOK_PULSE_RZ,
         .short_width = 500,
         .long_width  = 500,
         .reset_limit = 5 * 500,

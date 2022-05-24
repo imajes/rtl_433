@@ -134,7 +134,7 @@ static int switchdoclabs_weathersenseAS_ask_extract(r_device *decoder, bitbuffer
     return msg_len;
 }
 
-long ASconvertByteToLong(uint8_t buffer[], int index)
+static long ASconvertByteToLong(uint8_t buffer[], int index)
 {
 
     union Long {
@@ -156,7 +156,7 @@ long ASconvertByteToLong(uint8_t buffer[], int index)
     return myData.word;
 }
 
-unsigned long ASconvertByteToUnsignedLong(uint8_t buffer[], int index)
+static unsigned long ASconvertByteToUnsignedLong(uint8_t buffer[], int index)
 {
 
     union Long {
@@ -322,7 +322,7 @@ static int switchdoclabs_weathersenseAS_ask_callback(r_device *decoder, bitbuffe
 
     // now build output
     data = data_make(
-            "model", "", DATA_STRING, _X("SwitchDoc Labs WeatherSense Wireless AfterShock", "SwitchDoc Labs AfterShock"),
+            "model", "", DATA_STRING, "SwitchDoc Labs WeatherSense Wireless AfterShock", "SwitchDoc Labs AfterShock",
             "len", "Data len", DATA_INT, data_len,
 
             "messageid", "Message ID", DATA_INT, messageID,
@@ -385,7 +385,7 @@ static char *switchdoclabs_weathersenseAS_ask_output_fields[] = {
 
 r_device switchdoclabs_weathersenseAS = {
         .name        = "SwitchDoc Labs WeatherSenseAS",
-        .modulation  = OOK_PULSE_PCM_RZ,
+        .modulation  = OOK_PULSE_RZ,
         .short_width = 500,
         .long_width  = 500,
         .reset_limit = 5 * 500,

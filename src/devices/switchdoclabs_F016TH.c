@@ -64,8 +64,8 @@ switchdoclabs_F016TH_decode(r_device *decoder, bitbuffer_t *bitbuffer, unsigned 
     humidity     = b[4];
 
     data = data_make(
-            "model", "", DATA_STRING, _X("SwitchDocLabs-F016TH", "SwitchDoc Labs F016TH Thermo-Hygrometer"),
-            _X("id", "device"),
+            "model", "", DATA_STRING, "SwitchDocLabs-F016TH", "SwitchDoc Labs F016TH Thermo-Hygrometer",
+            "id", "", "device",
             "House Code", DATA_INT, deviceID,
             "modelnumber", "Model Number", DATA_INT, modelNumber,
             "channel", "Channel", DATA_INT, channel,

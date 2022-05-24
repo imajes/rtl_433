@@ -345,7 +345,7 @@ static int switchdoclabs_weathersenseAQI_ask_callback(r_device *decoder, bitbuff
 
     // now build output
     data = data_make(
-            "model", "", DATA_STRING, _X("SwitchDoc Labs WeatherSense Wireless AQI", "SwitchDoc Labs AQI"),
+            "model", "", DATA_STRING, "SwitchDoc Labs WeatherSense Wireless AQI", "SwitchDoc Labs AQI",
             "len", "Data len", DATA_INT, data_len,
 
             "messageid", "Message ID", DATA_INT, messageID,
@@ -399,7 +399,7 @@ static char *switchdoclabs_weathersenseAQI_ask_output_fields[] = {
 
 r_device switchdoclabs_weathersenseAQI = {
         .name        = "SwitchDoc Labs WeatherSenseAQI",
-        .modulation  = OOK_PULSE_PCM_RZ,
+        .modulation  = OOK_PULSE_RZ,
         .short_width = 500,
         .long_width  = 500,
         .reset_limit = 5 * 500,
