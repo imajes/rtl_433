@@ -194,6 +194,14 @@ add_library(r_433 STATIC
     devices/somfy_rts.c
     devices/springfield.c
     devices/steelmate.c
+    devices/switchdoclabs_F016TH.c
+    devices/switchdoclabs_FT020T.c
+    devices/switchdoclabs_SM23.c
+    devices/switchdoclabs_solarmax.c
+    devices/switchdoclabs_weathersenseAQI.c
+    devices/switchdoclabs_weathersenseAS.c
+    devices/switchdoclabs_weathersenseRad.c
+    devices/switchdoclabs_weathersenseTB.c
     devices/telldus_ft0385r.c
     devices/tfa_30_3196.c
     devices/tfa_30_3221.c

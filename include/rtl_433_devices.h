@@ -226,6 +226,14 @@
     DECL(ant_antplus) \
     DECL(emos_e6016_rain) \
     DECL(hcs200_fsk) \
+    DECL(switchdoclabs_FT020T) \
+    DECL(switchdoclabs_F016TH) \
+    DECL(switchdoclabs_solarmax) \
+    DECL(switchdoclabs_SM23) \
+    DECL(switchdoclabs_weathersenseAQI) \
+    DECL(switchdoclabs_weathersenseTB) \
+    DECL(switchdoclabs_weathersenseAS) \
+    DECL(switchdoclabs_weathersenseRad) \
 
     /* Add new decoders here. */
 
