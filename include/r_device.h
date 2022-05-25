@@ -60,6 +60,7 @@ typedef struct r_device {
 
     /* information provided by each decoder */
     char *name;
+    char *code;
     unsigned modulation;
     float short_width;
     float long_width;

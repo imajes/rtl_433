@@ -64,9 +64,9 @@ switchdoclabs_F016TH_decode(r_device *decoder, bitbuffer_t *bitbuffer, unsigned 
     humidity     = b[4];
 
     data = data_make(
-            "model", "", DATA_STRING, "SwitchDocLabs-F016TH", "SwitchDoc Labs F016TH Thermo-Hygrometer",
-            "id", "", "device",
-            "House Code", DATA_INT, deviceID,
+            "model", "", DATA_STRING, "SwitchDoc Labs F016TH Thermo-Hygrometer",
+            "id", "", DATA_STRING, "device",
+            "House Code", "", DATA_INT, deviceID,
             "modelnumber", "Model Number", DATA_INT, modelNumber,
             "channel", "Channel", DATA_INT, channel,
             "battery", "Battery", DATA_STRING, isBatteryLow ? "Low" : "OK",
@@ -78,6 +78,8 @@ switchdoclabs_F016TH_decode(r_device *decoder, bitbuffer_t *bitbuffer, unsigned 
 
     return 1;
 }
+
+
 
 static int
 switchdoclabs_F016TH_callback(r_device *decoder, bitbuffer_t *bitbuffer)

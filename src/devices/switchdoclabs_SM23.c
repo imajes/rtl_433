@@ -63,8 +63,8 @@ static int switchdoclabs_SM23_callback(r_device *decoder, bitbuffer_t *bitbuffer
 
     // Find a data package and extract data payload
     bit_offset = bitbuffer_search(bitbuffer, 0, 0, preamble, sizeof(preamble) * 8) + sizeof(preamble) * 8;
-    printf("bit_offset=%d\n", bit_offset);
-    printf("bit_buffer->bits_per_row[0]=%d\n", bitbuffer->bits_per_row[0]);
+    /* printf("bit_offset=%d\n", bit_offset); */
+    /* printf("bit_buffer->bits_per_row[0]=%d\n", bitbuffer->bits_per_row[0]); */
     if (bit_offset + sizeof(b) * 8 > bitbuffer->bits_per_row[0]) { // Did not find a big enough package
         if (decoder->verbose)
             decoder_logf(decoder, 2, __func__, "SDL_SM23: short package. Header index: %u.", bit_offset);

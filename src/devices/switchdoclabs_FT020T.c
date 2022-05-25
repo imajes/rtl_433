@@ -87,7 +87,7 @@ static int sdl_ft020t_decoder(r_device *decoder, bitbuffer_t *bitbuffer, unsigne
             "device_id",       "Device",                 DATA_INT,      device_id,
             "device_serial",   "Serial Number",          DATA_INT,      device_serial,
             "battery_low",     "Battery Low",            DATA_INT,      battery_low_state,
-            "wind_avg_raw",    "Avg Wind Speed (raw)",   DATA_FORMAT,   "%.1f", DATA_DOUBLE,  avg_wind_speed,
+            "wind_avg_raw",    "Avg Wind Speed (raw)",   DATA_INT,      avg_wind_speed,
             "wind_avg_ms",     "Avg Wind Speed (m/s)",   DATA_FORMAT,   "%.1f m/s", DATA_DOUBLE, avg_wind_speed * 0.1f,
             "wind_gust_raw",   "Gust Speed (raw)",       DATA_INT,      gust_speed,
             "wind_gust_ms",    "Gust Speed (m/s)",       DATA_FORMAT,   "%.1f m/s", DATA_DOUBLE, gust_speed * 0.1f,
@@ -179,7 +179,8 @@ static char *sdl_ft020t_output_fields[] = {
         NULL};
 
 r_device switchdoclabs_FT020T = {
-        .name        = "SwitchDocLabs Weather FT020T Sensors",
+        .name        = "SwitchDoc Labs Weather FT020T Sensors",
+        .code        = "sdl_ft020t",
         .modulation  = OOK_PULSE_MANCHESTER_ZEROBIT,
         .short_width = 500,
         .long_width  = 0,    // not used
