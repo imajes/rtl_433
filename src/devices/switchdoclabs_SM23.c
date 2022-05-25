@@ -87,14 +87,14 @@ static int switchdoclabs_SM23_callback(r_device *decoder, bitbuffer_t *bitbuffer
     // Verify checksum
     if ((add_bytes(b, 13) & 0xff) != b[13]) {
         if (decoder->verbose)
-            decoder_logf(b, 2, __func__, "SDL_SM23: Checksum error: ");
+            decoder_logf(decoder, 2, __func__, "SDL_SM23: Checksum error: ");
         return DECODE_FAIL_MIC;
     }
 
     // Verify crc
     if (crc8(b, 12, 0x31, 0) != b[12]) {
         if (decoder->verbose)
-            decoder_logf(b, 2, __func__, "SDL_SM23: Bitsum error: ");
+            decoder_logf(decoder, 2, __func__, "SDL_SM23: Bitsum error: ");
         return DECODE_FAIL_MIC;
     }
 

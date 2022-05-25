@@ -147,41 +147,19 @@ static long ASconvertByteToLong(uint8_t buffer[], int index)
         long word;
     };
 
-    union Long myData;
+    union Long sdlData;
 
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    myData.byte3 = buffer[index + 2];
-    myData.byte4 = buffer[index + 3];
-    return myData.word;
+    sdlData.byte1 = buffer[index];
+    sdlData.byte2 = buffer[index + 1];
+    sdlData.byte3 = buffer[index + 2];
+    sdlData.byte4 = buffer[index + 3];
+    return sdlData.word;
 }
 
-static unsigned long ASconvertByteToUnsignedLong(uint8_t buffer[], int index)
+static unsigned int ASconvertByteToUnsignedInt(uint8_t buffer[], int index)
 {
 
-    union Long {
-        struct {
-            uint8_t byte1;
-            uint8_t byte2;
-            uint8_t byte3;
-            uint8_t byte4;
-        };
-        unsigned long word;
-    };
-
-    union Long myData;
-
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    myData.byte3 = buffer[index + 2];
-    myData.byte4 = buffer[index + 3];
-    return myData.word;
-}
-
-unsigned int ASconvertByteToUnsignedInt(uint8_t buffer[], int index)
-{
-
-    union myInt {
+    union sdlInt {
         struct {
             uint8_t byte1;
             uint8_t byte2;
@@ -189,14 +167,14 @@ unsigned int ASconvertByteToUnsignedInt(uint8_t buffer[], int index)
         unsigned int word;
     };
 
-    union myInt myData;
+    union sdlInt sdlData;
 
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    return myData.word;
+    sdlData.byte1 = buffer[index];
+    sdlData.byte2 = buffer[index + 1];
+    return sdlData.word;
 }
 
-float ASconvertByteToFloat(uint8_t buffer[], int index)
+static float ASconvertByteToFloat(uint8_t buffer[], int index)
 {
 
     union Float {
@@ -209,14 +187,14 @@ float ASconvertByteToFloat(uint8_t buffer[], int index)
         float word;
     };
 
-    union Float myData;
+    union Float sdlData;
 
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    myData.byte3 = buffer[index + 2];
-    myData.byte4 = buffer[index + 3];
+    sdlData.byte1 = buffer[index];
+    sdlData.byte2 = buffer[index + 1];
+    sdlData.byte3 = buffer[index + 2];
+    sdlData.byte4 = buffer[index + 3];
 
-    return myData.word;
+    return sdlData.word;
 }
 
 static int switchdoclabs_weathersenseAS_ask_callback(r_device *decoder, bitbuffer_t *bitbuffer)

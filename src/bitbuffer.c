@@ -322,13 +322,15 @@ static void print_bitrow(uint8_t const *bitrow, unsigned bit_len, unsigned highe
 {
     unsigned row_len = 0;
 
-    fprintf(stderr, "{%2u} ", bit_len);
+    fprintf(stderr, "BITS. len: {%2u} ", bit_len);
+    fprintf(stderr, "hex: ");
     for (unsigned col = 0; col < (bit_len + 7) / 8; ++col) {
         row_len += fprintf(stderr, "%02x ", bitrow[col]);
     }
     // Print binary values also?
     if (always_binary || bit_len <= BITBUF_MAX_PRINT_BITS) {
         fprintf(stderr, "%-*s: ", highest_indent > row_len ? highest_indent - row_len : 0, "");
+        fprintf(stderr, " | binary: ");
         for (unsigned bit = 0; bit < bit_len; ++bit) {
             if (bitrow[bit / 8] & (0x80 >> (bit % 8))) {
                 fprintf(stderr, "1");
@@ -362,7 +364,7 @@ static void print_bitbuffer(const bitbuffer_t *bits, int always_binary)
 
     fprintf(stderr, "bitbuffer:: Number of rows: %u \n", bits->num_rows);
     for (row = 0; row < bits->num_rows; ++row) {
-        fprintf(stderr, "[%02u] ", row);
+        fprintf(stderr, "[r%02u] ", row);
         print_bitrow(bits->bb[row], bits->bits_per_row[row], highest_indent, always_binary);
     }
     if (bits->num_rows >= BITBUF_ROWS) {

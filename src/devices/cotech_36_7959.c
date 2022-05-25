@@ -144,7 +144,7 @@ static char *cotech_36_7959_output_fields[] = {
 };
 
 r_device cotech_36_7959 = {
-        .name        = "Cotech 36-7959, SwitchDocLabs FT020T wireless weather station with USB",
+        .name        = "Cotech 36-7959 wireless weather station with USB",
         .modulation  = OOK_PULSE_MANCHESTER_ZEROBIT,
         .short_width = 500,
         .long_width  = 0,    // not used

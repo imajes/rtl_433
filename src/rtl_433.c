@@ -514,7 +514,7 @@ static void sdr_callback(unsigned char *iq_buf, uint32_t len, void *ctx)
                     if (dumper->format == PULSE_OOK) pulse_data_dump(dumper->file, &demod->pulse_data);
                 }
 
-                if (cfg->verbosity > 2) pulse_data_print(&demod->pulse_data);
+                if (cfg->verbosity > 3) pulse_data_print(&demod->pulse_data);
                 if (cfg->raw_mode == 1 || (cfg->raw_mode == 2 && p_events == 0) || (cfg->raw_mode == 3 && p_events > 0)) {
                     data_t *data = pulse_data_print_data(&demod->pulse_data);
                     event_occurred_handler(cfg, data);
@@ -538,7 +538,7 @@ static void sdr_callback(unsigned char *iq_buf, uint32_t len, void *ctx)
                     if (dumper->format == PULSE_OOK) pulse_data_dump(dumper->file, &demod->fsk_pulse_data);
                 }
 
-                if (cfg->verbosity > 2) pulse_data_print(&demod->fsk_pulse_data);
+                if (cfg->verbosity > 3) pulse_data_print(&demod->fsk_pulse_data);
                 if (cfg->raw_mode == 1 || (cfg->raw_mode == 2 && p_events == 0) || (cfg->raw_mode == 3 && p_events > 0)) {
                     data_t *data = pulse_data_print_data(&demod->fsk_pulse_data);
                     event_occurred_handler(cfg, data);

@@ -45,6 +45,73 @@ static uint8_t symbol_6to4(uint8_t symbol)
     return 0xFF; // Not found
 }
 
+static long convertByteToLong(uint8_t buffer[], int index)
+{
+
+    union Long {
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+        long word;
+    };
+
+    union Long sdlData;
+
+    sdlData.byte1 = buffer[index];
+    sdlData.byte2 = buffer[index + 1];
+    sdlData.byte3 = buffer[index + 2];
+    sdlData.byte4 = buffer[index + 3];
+    return sdlData.word;
+}
+
+static unsigned long convertByteToUnsignedLong(uint8_t buffer[], int index)
+{
+
+    union Long {
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+        unsigned long word;
+    };
+
+    union Long sdlData;
+
+    sdlData.byte1 = buffer[index];
+    sdlData.byte2 = buffer[index + 1];
+    sdlData.byte3 = buffer[index + 2];
+    sdlData.byte4 = buffer[index + 3];
+    return sdlData.word;
+}
+
+static float convertByteToFloat(uint8_t buffer[], int index)
+{
+
+    union Float {
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+        float word;
+    };
+
+    union Float sdlData;
+
+    sdlData.byte1 = buffer[index];
+    sdlData.byte2 = buffer[index + 1];
+    sdlData.byte3 = buffer[index + 2];
+    sdlData.byte4 = buffer[index + 3];
+
+    return sdlData.word;
+}
+
 static int switchdoclabs_solarmax_ask_extract(r_device *decoder, bitbuffer_t *bitbuffer, uint8_t row, /*OUT*/ uint8_t *payload)
 {
     int len     = bitbuffer->bits_per_row[row];
@@ -132,73 +199,6 @@ static int switchdoclabs_solarmax_ask_extract(r_device *decoder, bitbuffer_t *bi
     }
 
     return msg_len;
-}
-
-long convertByteToLong(uint8_t buffer[], int index)
-{
-
-    union Long {
-        struct {
-            uint8_t byte1;
-            uint8_t byte2;
-            uint8_t byte3;
-            uint8_t byte4;
-        };
-        long word;
-    };
-
-    union Long myData;
-
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    myData.byte3 = buffer[index + 2];
-    myData.byte4 = buffer[index + 3];
-    return myData.word;
-}
-
-unsigned long convertByteToUnsignedLong(uint8_t buffer[], int index)
-{
-
-    union Long {
-        struct {
-            uint8_t byte1;
-            uint8_t byte2;
-            uint8_t byte3;
-            uint8_t byte4;
-        };
-        unsigned long word;
-    };
-
-    union Long myData;
-
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    myData.byte3 = buffer[index + 2];
-    myData.byte4 = buffer[index + 3];
-    return myData.word;
-}
-
-float convertByteToFloat(uint8_t buffer[], int index)
-{
-
-    union Float {
-        struct {
-            uint8_t byte1;
-            uint8_t byte2;
-            uint8_t byte3;
-            uint8_t byte4;
-        };
-        float word;
-    };
-
-    union Float myData;
-
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    myData.byte3 = buffer[index + 2];
-    myData.byte4 = buffer[index + 3];
-
-    return myData.word;
 }
 
 static int switchdoclabs_solarmax_ask_callback(r_device *decoder, bitbuffer_t *bitbuffer)

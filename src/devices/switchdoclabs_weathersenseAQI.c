@@ -134,7 +134,7 @@ static int switchdoclabs_weathersenseAQI_ask_extract(r_device *decoder, bitbuffe
     return msg_len;
 }
 
-long AQIconvertByteToLong(uint8_t buffer[], int index)
+static long AQIconvertByteToLong(uint8_t buffer[], int index)
 {
 
     union Long {
@@ -147,41 +147,19 @@ long AQIconvertByteToLong(uint8_t buffer[], int index)
         long word;
     };
 
-    union Long myData;
+    union Long sdlData;
 
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    myData.byte3 = buffer[index + 2];
-    myData.byte4 = buffer[index + 3];
-    return myData.word;
+    sdlData.byte1 = buffer[index];
+    sdlData.byte2 = buffer[index + 1];
+    sdlData.byte3 = buffer[index + 2];
+    sdlData.byte4 = buffer[index + 3];
+    return sdlData.word;
 }
 
-unsigned long AQIconvertByteToUnsignedLong(uint8_t buffer[], int index)
+static unsigned int AQIconvertByteToUnsignedInt(uint8_t buffer[], int index)
 {
 
-    union Long {
-        struct {
-            uint8_t byte1;
-            uint8_t byte2;
-            uint8_t byte3;
-            uint8_t byte4;
-        };
-        unsigned long word;
-    };
-
-    union Long myData;
-
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    myData.byte3 = buffer[index + 2];
-    myData.byte4 = buffer[index + 3];
-    return myData.word;
-}
-
-unsigned int AQIconvertByteToUnsignedInt(uint8_t buffer[], int index)
-{
-
-    union myInt {
+    union sdlInt {
         struct {
             uint8_t byte1;
             uint8_t byte2;
@@ -189,14 +167,14 @@ unsigned int AQIconvertByteToUnsignedInt(uint8_t buffer[], int index)
         unsigned int word;
     };
 
-    union myInt myData;
+    union sdlInt sdlData;
 
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    return myData.word;
+    sdlData.byte1 = buffer[index];
+    sdlData.byte2 = buffer[index + 1];
+    return sdlData.word;
 }
 
-float AQIconvertByteToFloat(uint8_t buffer[], int index)
+static float AQIconvertByteToFloat(uint8_t buffer[], int index)
 {
 
     union Float {
@@ -209,21 +187,21 @@ float AQIconvertByteToFloat(uint8_t buffer[], int index)
         float word;
     };
 
-    union Float myData;
+    union Float sdlData;
 
-    myData.byte1 = buffer[index];
-    myData.byte2 = buffer[index + 1];
-    myData.byte3 = buffer[index + 2];
-    myData.byte4 = buffer[index + 3];
+    sdlData.byte1 = buffer[index];
+    sdlData.byte2 = buffer[index + 1];
+    sdlData.byte3 = buffer[index + 2];
+    sdlData.byte4 = buffer[index + 3];
 
-    return myData.word;
+    return sdlData.word;
 }
 
 // AQI Calculation
 
 #define AMOUNT_OF_LEVELS 6
 
-int get_grid_index_(uint16_t value, int array[AMOUNT_OF_LEVELS][2])
+static int get_grid_index_(uint16_t value, int array[AMOUNT_OF_LEVELS][2])
 {
     for (int i = 0; i < AMOUNT_OF_LEVELS; i++) {
         if (value >= array[i][0] && value <= array[i][1]) {
@@ -233,14 +211,14 @@ int get_grid_index_(uint16_t value, int array[AMOUNT_OF_LEVELS][2])
     return -1;
 }
 
-int index_grid_[AMOUNT_OF_LEVELS][2] = {{0, 51}, {51, 100}, {101, 150}, {151, 200}, {201, 300}, {301, 500}};
+static int index_grid_[AMOUNT_OF_LEVELS][2] = {{0, 51}, {51, 100}, {101, 150}, {151, 200}, {201, 300}, {301, 500}};
 
-int pm2_5_calculation_grid_[AMOUNT_OF_LEVELS][2] = {{0, 12}, {13, 35}, {36, 55}, {56, 150}, {151, 250}, {251, 500}};
+static int pm2_5_calculation_grid_[AMOUNT_OF_LEVELS][2] = {{0, 12}, {13, 35}, {36, 55}, {56, 150}, {151, 250}, {251, 500}};
 
-int pm10_0_calculation_grid_[AMOUNT_OF_LEVELS][2] = {{0, 54}, {55, 154}, {155, 254},
+static int pm10_0_calculation_grid_[AMOUNT_OF_LEVELS][2] = {{0, 54}, {55, 154}, {155, 254},
         {255, 354}, {355, 424}, {425, 604}};
 
-int calculate_index_(uint16_t value, int array[AMOUNT_OF_LEVELS][2])
+static int calculate_index_(uint16_t value, int array[AMOUNT_OF_LEVELS][2])
 {
     int grid_index = get_grid_index_(value, array);
     int aqi_lo     = index_grid_[grid_index][0];
@@ -251,7 +229,7 @@ int calculate_index_(uint16_t value, int array[AMOUNT_OF_LEVELS][2])
     return ((aqi_hi - aqi_lo) / (conc_hi - conc_lo)) * (value - conc_lo) + aqi_lo;
 }
 
-unsigned int get_aqi(unsigned int pm2_5_value, unsigned int pm10_0_value)
+ static unsigned int get_aqi(unsigned int pm2_5_value, unsigned int pm10_0_value)
 {
     // from esphome
 
@@ -289,7 +267,7 @@ static int switchdoclabs_weathersenseAQI_ask_callback(r_device *decoder, bitbuff
     float SolarPanelVoltage;
     float SolarPanelCurrent;
     unsigned long AuxA;
-    float AuxB;
+    //float AuxB;
 
     msg_len = switchdoclabs_weathersenseAQI_ask_extract(decoder, bitbuffer, row, switchdoclabs_weathersenseAQI_payload);
     if (msg_len <= 0) {
@@ -396,6 +374,8 @@ static char *switchdoclabs_weathersenseAQI_ask_output_fields[] = {
         "auxa",
         "mic",
         NULL};
+
+
 
 r_device switchdoclabs_weathersenseAQI = {
         .name        = "SwitchDoc Labs WeatherSenseAQI",
