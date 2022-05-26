@@ -63,3 +63,4 @@ rtl_433_tests
 cmake-build-debug/
 
 .DS_Store
+/device_list.txt
