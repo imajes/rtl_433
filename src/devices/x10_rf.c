@@ -161,6 +161,8 @@ static char *output_fields[] = {
 
 r_device X10_RF = {
         .name        = "X10 RF",
+        .code        = "x10_rf",
+        .legacy_protocol_num = 22,
         .modulation  = OOK_PULSE_PPM,
         .short_width = 562,  // Short gap 562.5 µs
         .long_width  = 1687, // Long gap 1687.5 µs

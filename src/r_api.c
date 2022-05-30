@@ -277,7 +277,7 @@ void register_protocol(r_cfg_t *cfg, r_device *r_dev, char *arg)
     list_push(&cfg->demod->r_devs, p);
 
     if (cfg->verbosity) {
-        fprintf(stderr, "Registering protocol [%u] \"%s\"\n", r_dev->protocol_num, r_dev->name);
+        fprintf(stderr, "Registering protocol [%s (%u)] \"%s\"\n", r_dev->code, r_dev->legacy_protocol_num, r_dev->name);
     }
 }
 
