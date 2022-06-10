@@ -89,11 +89,13 @@ static int sdl_ft020t_decoder(r_device *decoder, bitbuffer_t *bitbuffer, unsigne
             "battery_low",     "Battery Low",            DATA_INT,      battery_low_state,
             "wind_avg_raw",    "Avg Wind Speed (raw)",   DATA_INT,      avg_wind_speed,
             "wind_avg_ms",     "Avg Wind Speed (m/s)",   DATA_FORMAT,   "%.1f m/s", DATA_DOUBLE, avg_wind_speed * 0.1f,
+            "wind_avg_mph",    "Avg Wind Speed (mph)",   DATA_FORMAT,   "%.1f mph", DATA_DOUBLE, avg_wind_speed * 0.1f * 2.23694,
             "wind_gust_raw",   "Gust Speed (raw)",       DATA_INT,      gust_speed,
             "wind_gust_ms",    "Gust Speed (m/s)",       DATA_FORMAT,   "%.1f m/s", DATA_DOUBLE, gust_speed * 0.1f,
+            "wind_gust_mph",   "Gust Speed (mph)",       DATA_FORMAT,   "%.1f mph", DATA_DOUBLE, gust_speed * 0.1f * 2.23694,
             "wind_dir_deg",    "Wind Direction (deg)",   DATA_INT,      wind_direction,
             "culm_rain_mm",    "Culm. Rain (mm)",        DATA_FORMAT,   "%.1f mm", DATA_DOUBLE, culm_rain * 0.1f,
-            "temp_raw",        "Temperature",            DATA_INT,      temp_raw,
+            "temp_raw",        "Temperature (raw)",      DATA_INT,      temp_raw,
             "temp_F",          "Temperature (F)",        DATA_FORMAT,   "%.1f F", DATA_DOUBLE, temp_f,
             "temp_C",          "Temperature (c)",        DATA_FORMAT,   "%.1f C", DATA_DOUBLE, temp_c,
             "humidity",        "Humidity (%)",           DATA_FORMAT,   "%u %%", DATA_INT, humidity,
@@ -165,8 +167,10 @@ static char *sdl_ft020t_output_fields[] = {
         "battery_low",
         "wind_avg_raw",
         "wind_avg_ms",
+        "wind_avg_mph",
         "wind_gust_raw",
         "wind_gust_ms",
+        "wind_gust_mph",
         "wind_dir_deg",
         "culm_rain_mm",
         "temp_raw",
@@ -175,7 +179,7 @@ static char *sdl_ft020t_output_fields[] = {
         "humidity",
         "light_lux",
         "uv",
-        "mic",
+        /* "mic", */
         NULL};
 
 r_device switchdoclabs_FT020T = {
